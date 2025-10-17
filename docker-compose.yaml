@@ -1,0 +1,27 @@
+services:
+  server:
+    build:
+      context: server
+      dockerfile: Dockerfile
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8080/', timeout=1)",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    ports:
+      - 8080:8080
+
+  client:
+    build:
+      context: client
+      dockerfile: Dockerfile
+    depends_on:
+      server:
+        condition: service_healthy
